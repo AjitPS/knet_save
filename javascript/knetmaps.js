@@ -46,6 +46,9 @@ KNETMAPS.KnetMaps = function() {
 				+ "<input type='submit' id='savePNG' value='' class='unhover' onclick='KNETMAPS.Menu().exportAsImage();' title='Export the network as a .png image' onmouseover='KNETMAPS.Menu().onHover($(this));' onmouseout='KNETMAPS.Menu().offHover($(this));'>"
 				+ "<input type='submit' id='saveJSON' value='' class='unhover' onclick='KNETMAPS.Menu().exportAsJson();' title='Export the network in JSON format' onmouseover='KNETMAPS.Menu().onHover($(this));' onmouseout='KNETMAPS.Menu().offHover($(this));'>"
 				+ "<input type='submit' id='openJSON' value='' class='unhover' onclick='KNETMAPS.Menu().importJson();' title='Import a saved Network' onmouseover='KNETMAPS.Menu().onHover($(this));' onmouseout='KNETMAPS.Menu().offHover($(this));'>"
+			/*	+ "<input type='submit' id='saveToCloud' value='' class='unhover' onclick='KNETMAPS.Menu().saveToCloud();' title='Save the network to cloud' onmouseover='KNETMAPS.Menu().onHover($(this));' onmouseout='KNETMAPS.Menu().offHover($(this));'>"
+				+ "<input type='submit' id='openFromCloud' value='' class='unhover' onclick='KNETMAPS.Menu().openFromCloud();' title='Open a saved network from cloud' onmouseover='KNETMAPS.Menu().onHover($(this));' onmouseout='KNETMAPS.Menu().offHover($(this));'>"
+				*/
 				+ "<input type='submit' id='helpURL' value='' class='unhover' onclick='KNETMAPS.Menu().openKnetHelpPage();' title='Go to help documentation' onmouseover='KNETMAPS.Menu().onHover($(this));' onmouseout='KNETMAPS.Menu().offHover($(this));'>"
 				+ "<input type='file' accept='.json,.cyjs.json,.cyjs,.cx' id='openNetworkFile' style='display:none' onchange='KNETMAPS.Menu().OpenKnetFile(event);' >"
 				+ "</div> <!-- KnetMaps Menubar -->"

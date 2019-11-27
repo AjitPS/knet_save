@@ -68,6 +68,32 @@ KNETMAPS.Menu = function() {
    pngTab.document.close();
   }
 
+  // Save to cloud
+ my.saveToCloud = function() {
+   var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
+   console.log("save to cloud...");
+   
+   // convert graphJSON + allGraphData to CX format for NDEx.
+   
+   // authenticate user via NDEx API.
+   
+   // save to NDEx via its API.
+   
+  }
+  
+  // Open a saved network from cloud
+ my.openFromCloud = function() {
+   var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
+   console.log("open from cloud...");
+   
+   // authenticate user via NDEx API.
+   
+   // select a network from NDEx & import it via its API.
+   
+   // convert CX network to KnetMaps - graphJSON + allGraphData and re-draw the network.
+   
+  }
+  
   // Show all concepts & relations.
  my.showAll = function() {
    var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
