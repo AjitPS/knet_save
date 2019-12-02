@@ -38,13 +38,56 @@ KNETMAPS.Menu = function() {
  my.exportAsJson = function() {
    var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
 
-   var exportJson= cy.json(); // get JSON object for the network graph.
-   //console.log("Save network JSON as: kNetwork.cyjs.json");
+   // extract JSON for only the visible knetwork.
+   //var exportJson= cy.json(); // full graph JSON
+   console.log("Save network JSON as: kNetwork.cyjs.json");
+   
+   // remove all hidden nodes & edges from the cy graph knetwork.
+   var hiddenNodes = cy.collection();
+   cy.nodes().forEach(function (con) {
+	   if (con.hasClass('HideEle')) {
+		   hiddenNodes = hiddenNodes.add(con);
+		  }
+   });
+   // same for edges
+   var hiddenEdges = cy.collection();
+   cy.edges().forEach(function (edge) {
+	   if (edge.hasClass('HideEle')) {
+		   hiddenEdges = hiddenEdges.add(edge);
+		  }
+	});
+   var hiddenElements_collection = cy.collection();
+   hiddenElements_collection= hiddenElements_collection.add(hiddenNodes).add(hiddenEdges);
+   // remove all these hidden nodes & edges from the knetwork.
+   cy.remove(hiddenElements_collection);
+   // new subgraph knetwork to be exported as JSON
+   var exportJson= cy.json();
+   
+   // streamline allGraphData to only extract the metadata around the visible nodes & edges, by IDs now in filtered cy knetwork.
+   var elesToRetain = [];
+   cy.nodes().forEach(function (con) {
+	   elesToRetain.push(con.id());
+   });
+   cy.edges().forEach(function (edge) {
+	   elesToRetain.push(edge.id());
+   });
+   console.log("metadata: elesToRetain: "+ elesToRetain);
+   //
+   
+   // final graphJSON & allGraphData that KnetMaps need to re-load & render later.
    var exportedJson= "var graphJSON= "+ JSON.stringify(exportJson) + "; var allGraphData= " + JSON.stringify(allGraphData) +";";
 
-   // use FileSaver.js to save using file downloader
+   // use FileSaver.js to save using file downloader (deprecated).
    var kNet_json_Blob= new Blob([exportedJson], {type: 'application/javascript;charset=utf-8'});
    saveAs(kNet_json_Blob, "kNetwork.cyjs.json");
+   
+   // fetch total node & edge count for the knetwork.
+   var totalNodes= cy.$(':visible').nodes().size();
+   var totalEdges= cy.$(':visible').edges().size();
+   
+   // knetwork response JSON with 3 fields.
+   var knetSave_response = "{ 'nodes': '"+ totalNodes +"', 'edges': '"+ totalEdges +"', 'network': '"+ exportedJson +"' }";
+   console.log("knetSave_response: "+ knetSave_response);
   }
   
   // Export the graph as a .png image and allow users to save it.
