@@ -87,7 +87,7 @@ KNETMAPS.Menu = function() {
    
    // knetwork response JSON with 3 fields.
    var knetSave_response = "{ 'nodes': '"+ totalNodes +"', 'edges': '"+ totalEdges +"', 'network': '"+ exportedJson +"' }";
-   console.log("knetSave_response: "+ knetSave_response);
+   //console.log("knetSave_response: "+ knetSave_response);
   }
   
   // Export the graph as a .png image and allow users to save it.
