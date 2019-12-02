@@ -38,44 +38,29 @@ KNETMAPS.Menu = function() {
  my.exportAsJson = function() {
    var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
 
-   // extract JSON for only the visible knetwork.
-   //var exportJson= cy.json(); // full graph JSON
-   console.log("Save network JSON as: kNetwork.cyjs.json");
+   var exportJson= cy.json(); // full graphJSON
    
-   // remove all hidden nodes & edges from the cy graph knetwork.
-   var hiddenNodes = cy.collection();
-   cy.nodes().forEach(function (con) {
-	   if (con.hasClass('HideEle')) {
-		   hiddenNodes = hiddenNodes.add(con);
-		  }
-   });
-   // same for edges
-   var hiddenEdges = cy.collection();
-   cy.edges().forEach(function (edge) {
-	   if (edge.hasClass('HideEle')) {
-		   hiddenEdges = hiddenEdges.add(edge);
-		  }
-	});
-   var hiddenElements_collection = cy.collection();
-   hiddenElements_collection= hiddenElements_collection.add(hiddenNodes).add(hiddenEdges);
-   // remove all these hidden nodes & edges from the knetwork.
-   cy.remove(hiddenElements_collection);
-   // new subgraph knetwork to be exported as JSON
-   var exportJson= cy.json();
+   var elesToRetain= []; // to streamline content exported in exportJson (graphJSON) & metaJSON (allGraphData).
+   cy.$(':visible').forEach(function (ele) { elesToRetain.push(ele.id()); });
    
-   // streamline allGraphData to only extract the metadata around the visible nodes & edges, by IDs now in filtered cy knetwork.
-   var elesToRetain = [];
-   cy.nodes().forEach(function (con) {
-	   elesToRetain.push(con.id());
-   });
-   cy.edges().forEach(function (edge) {
-	   elesToRetain.push(edge.id());
-   });
-   console.log("metadata: elesToRetain: "+ elesToRetain);
-   //
+   // remove hidden nodes/edges metadata from exportJson.
+   exportJson.elements.nodes= exportJson.elements.nodes.filter( function( con ) {
+	   return elesToRetain.includes(con.data.id); });
+   exportJson.elements.edges= exportJson.elements.edges.filter( function( rel ) {
+	   return elesToRetain.includes(rel.data.id); });
    
-   // final graphJSON & allGraphData that KnetMaps need to re-load & render later.
-   var exportedJson= "var graphJSON= "+ JSON.stringify(exportJson) + "; var allGraphData= " + JSON.stringify(allGraphData) +";";
+   // remove hidden nodes/edges metadata from metaJSON (allGraphData).
+   var metaJSON= allGraphData;
+   metaJSON.ondexmetadata.concepts= metaJSON.ondexmetadata.concepts.filter( function( con ) {
+	   return elesToRetain.includes(con.id); });
+   metaJSON.ondexmetadata.relations= metaJSON.ondexmetadata.relations.filter( function( rel ) {
+	   return elesToRetain.includes(rel.id); });
+   // remove other redundant metaJSON entries.
+   var omit_redundant= ["graphName","numberOfConcepts","numberOfRelations","version"];
+   omit_redundant.forEach(function (entry) { delete metaJSON.ondexmetadata[entry]; });
+   
+   // knetwork response: final graphJSON (in exportJson) & allGraphData (in metaJSON) that KnetMaps needs to re-load & render later.
+   var exportedJson= "var graphJSON= "+ JSON.stringify(exportJson) + "; var allGraphData= " + JSON.stringify(metaJSON) +";";
 
    // use FileSaver.js to save using file downloader (deprecated).
    var kNet_json_Blob= new Blob([exportedJson], {type: 'application/javascript;charset=utf-8'});
@@ -87,7 +72,8 @@ KNETMAPS.Menu = function() {
    
    // knetwork response JSON with 3 fields.
    var knetSave_response = "{ 'nodes': '"+ totalNodes +"', 'edges': '"+ totalEdges +"', 'network': '"+ exportedJson +"' }";
-   //console.log("knetSave_response: "+ knetSave_response);
+   // return response
+   //console.log("knetSave_response: "+ knetSave_response); // test
   }
   
   // Export the graph as a .png image and allow users to save it.
