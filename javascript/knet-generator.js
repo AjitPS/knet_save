@@ -174,11 +174,11 @@ KNETMAPS.Generator = function() {
 
 // On startup
 $(function() { // on dom ready
-  // load the cytoscapeJS network
-  console.log("load the cytoscapeJS network");
+  console.log("initialising...");
   //console.log("networkJSON= "+ networkJSON);
   //console.log("networkStylesheet: "+ networkStylesheet);
-  container.load_reload_Network(networkJSON, networkStylesheet/*, true*/);
+  // load the cytoscapeJS network to render
+  container.load_reload_Network(networkJSON, networkStylesheet, false);
   
   my.append_visibility_and_label_classes(); // to all network nodes/ edges.
 }); // on dom ready

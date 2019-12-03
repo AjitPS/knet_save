@@ -116,13 +116,13 @@ KNETMAPS.Menu = function() {
   }
   
   // Re-run the entire graph's layout.
- my.rerunLayout = function() {
+ my.rerunLayout = function(isReloaded) {
    // Get the cytoscape instance as a Javascript object from JQuery.
  //  var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
    var selected_elements= cy.$(':visible'); // get only the visible elements.
-
+   
    // Re-run the graph's layout, but only on the visible elements.
-   my.rerunGraphLayout(selected_elements);
+   my.rerunGraphLayout(selected_elements, isReloaded);
    
    // Reset the graph/ viewport.
    my.resetGraph();
@@ -131,23 +131,27 @@ KNETMAPS.Menu = function() {
   var layouts = KNETMAPS.Layouts();
   
   // Re-run the graph's layout, but only on the visible elements.
-  my.rerunGraphLayout = function(eles) {
+  my.rerunGraphLayout = function(eles, isReloaded) {
    var ld_selected= $('#layouts_dropdown').val();
-   if(ld_selected === "circle_layout") {
-	   layouts.setCircleLayout(eles);
-          }
-   else if(ld_selected === "cose_layout") {
-	   layouts.setCoseLayout(eles);
-          }
-   else if(ld_selected === "coseBilkent_layout") {
-	   layouts.setCoseBilkentLayout(eles);
-          }
-   else if(ld_selected === "concentric_layout") {
-	   layouts.setConcentricLayout(eles);
-          }
-   else if(ld_selected === "ngraph_force_layout") {
-	   layouts.setNgraphForceLayout(eles);
-          }
+   // Use preset layout for reloading saved knetwork.
+   if(isReloaded === false) {
+      layouts.setPresetLayout(eles);
+	  if(ld_selected === "circle_layout") {
+		 layouts.setCircleLayout(eles);
+        }
+	  else if(ld_selected === "cose_layout") {
+		  layouts.setCoseLayout(eles);
+         }
+	  else if(ld_selected === "coseBilkent_layout") {
+		  layouts.setCoseBilkentLayout(eles);
+		 }
+	  else if(ld_selected === "concentric_layout") {
+		  layouts.setConcentricLayout(eles);
+		 }
+	  else if(ld_selected === "ngraph_force_layout") {
+		  layouts.setNgraphForceLayout(eles);
+		 }
+	 }
   }
 
   // Update the label font size for all the concepts and relations.
@@ -245,7 +249,7 @@ KNETMAPS.Menu = function() {
  // Open selected cyjs JSON file to reload KnetMaps with.
  my.OpenKnetFile = function(event) {
    var selectedFile = event.target.files[0];
-   console.log("reopen network: "+ selectedFile.name);
+   //console.log("reopen network: "+ selectedFile.name);
    
    var reader = new FileReader();
    reader.onload = function(e) {
@@ -268,7 +272,7 @@ KNETMAPS.Menu = function() {
 	   var currentStylesheet_json= cy.style().json(); // use loaded eles_styles instead
 	   // reload KnetMaps with the new network
 	   //eval('generator.initializeNetworkView(graphJSON, allGraphData); generator.blurNodesWithHiddenNeighborhood(); stats.updateKnetStats(); legend.populateConceptLegend();');
-	   container.load_reload_Network(graphJSON, /*currentStylesheet_json*/JSON.parse(eles_styles)/*, false*/);
+	   container.load_reload_Network(graphJSON, /*currentStylesheet_json*/JSON.parse(eles_styles), true);
 	   eval('stats.updateKnetStats(); legend.populateConceptLegend();');
 	  };
 	  

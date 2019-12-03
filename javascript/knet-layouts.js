@@ -49,6 +49,17 @@ KNETMAPS.Layouts = function() {
    eles.layout(defaults.coseBilkentNetworkLayout);
   }
 
+  // Set Preset layout.
+   my.setPresetLayout = function(eles) {
+	// test...
+	/*var cy= $('#cy').cytoscape('get');
+	cy.nodes().forEach(function(n){
+    var x = n.position("x");
+    var y = n.position("y");
+	console.log("x,y: "+ x +","+ y); }); */
+	
+  }
+
   // Set default (CoSE) layout for the network graph.
    my.setDefaultLayout = function() {
    //console.log("cytoscapeJS container (cy) initialized... set default layout (on visible elements)...");
