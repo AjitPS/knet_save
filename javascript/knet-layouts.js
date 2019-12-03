@@ -51,6 +51,7 @@ KNETMAPS.Layouts = function() {
 
   // Set Preset layout.
    my.setPresetLayout = function(eles) {
+	//console.log("use preset layout for reloaded knetwork...");
 	// test...
 	/*var cy= $('#cy').cytoscape('get');
 	cy.nodes().forEach(function(n){
@@ -58,6 +59,7 @@ KNETMAPS.Layouts = function() {
     var y = n.position("y");
 	console.log("x,y: "+ x +","+ y); }); */
 	
+    eles.layout(defaults.presetLayout); // run the preset layout for reloaded knetworks.
   }
 
   // Set default (CoSE) layout for the network graph.
