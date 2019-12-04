@@ -10,8 +10,6 @@ KNETMAPS.Container = function() {
 	
 my.load_reload_Network = function(network_json, network_style, isReloaded) {
   console.log("load the cytoscapeJS network...");
-  //console.log("network_json= "+ network_json);
-  //console.log("network_style: "+ network_style);
   //console.log("isReloaded: "+ isReloaded);
 
 // Initialise a cytoscape container instance on the HTML DOM using JQuery.
@@ -21,12 +19,9 @@ var cy = window.cy = cytoscape({
   style: network_style,
   // Using the JSON data to create the nodes.
   elements: network_json,
-//  layout: /*defaultNetworkLayout*/ coseNetworkLayout, // layout of the Network
+  
   layout: { name: 'preset' }, // layout of the Network
-
-  // these options hide parts of the graph during interaction such as panning, dragging, etc. to enable faster rendering for larger graphs.
-//  hideLabelsOnViewport: true,
-//  hideEdgesOnViewport: true,
+  // Note: running preset layout before rendering breaks the Legend! FIX: pending
 
   // this is an alternative that uses a bitmap during interaction.
   textureOnViewport: false, // true,
@@ -60,7 +55,10 @@ var cy = window.cy = cytoscape({
   motionBlur: true,
 
   ready: function() {
-	  KNETMAPS.Menu().rerunLayout(isReloaded); // reset current layout.
+	  if(isReloaded === false) {
+		 /* when rendering new knetwork or maximize/minimze, then run selected (default) layout. For reloaded knetwork files, skip this. */
+		 KNETMAPS.Menu().rerunLayout(); // reset current layout.
+	    }
 	  window.cy= this;
   }
 });

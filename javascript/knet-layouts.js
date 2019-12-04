@@ -51,10 +51,9 @@ KNETMAPS.Layouts = function() {
 
   // Set Preset layout.
    my.setPresetLayout = function(eles) {
-	//console.log("use preset layout for reloaded knetwork...");
 	// test...
-	/*var cy= $('#cy').cytoscape('get');
-	cy.nodes().forEach(function(n){
+	/* var cy= $('#cy').cytoscape('get');
+	cy.nodes().forEach(function(n) {
     var x = n.position("x");
     var y = n.position("y");
 	console.log("x,y: "+ x +","+ y); }); */
@@ -64,7 +63,7 @@ KNETMAPS.Layouts = function() {
 
   // Set default (CoSE) layout for the network graph.
    my.setDefaultLayout = function() {
-   //console.log("cytoscapeJS container (cy) initialized... set default layout (on visible elements)...");
+   //console.log("cyJS container initialized... set default layout (on visible).");
    // Get the cytoscape instance as a Javascript object from JQuery.
    var cy= $('#cy').cytoscape('get');
    my.setCoseLayout(cy.$(':visible')); // run the layout only on the visible elements.

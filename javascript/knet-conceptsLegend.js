@@ -78,6 +78,13 @@ KNETMAPS.ConceptsLegend = function () {
         });
         // Obtain all the count of all of the concepts within the graph of this type
         var totConcepts = $(visibleNodes_ofSameType).length + $(hiddenNodes_ofSameType).length;
+		console.log("conText: "+ conText);
+		console.log("totConcepts: "+ totConcepts);
+		console.log("hiddenNodes_ofSameType: "+ hiddenNodes_ofSameType);
+		console.dir(hiddenNodes_ofSameType);
+		console.log("currently_visibleNodes: "+ totConcepts);
+		console.log("visibleNodes_ofSameType: "+ visibleNodes_ofSameType);
+		console.dir(visibleNodes_ofSameType);
 
         return {hiddenNodes: hiddenNodes_ofSameType, visibleNodes: currently_visibleNodes,
             visibleOfSameType: visibleNodes_ofSameType, total: totConcepts, text: conText};
