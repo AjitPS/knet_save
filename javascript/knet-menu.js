@@ -72,26 +72,26 @@ KNETMAPS.Menu = function() {
 
    // compose knet_metaData below (with name, date, etc.)
    var currentDate= new Date();
-   var knet_name= "myKnetwork_"+ currentDate.getTime() +".json"; // knetwork name with timemillisec
+   //var knet_name= "myKnetwork_"+ currentDate.getTime() +".json"; // knetwork name with timemillisec
+   var knet_name= "myKnetwork.json";
    // formatted date (mm: January=0)
    var knet_date= String(currentDate.getDate()).padStart(2, '0') + '/' + String(currentDate.getMonth() + 1).padStart(2, '0') + '/' + 
         currentDate.getFullYear() +' '+ currentDate.getHours() +':'+ ('0'+currentDate.getMinutes()).slice(-2);
    // fetch total node & edge count for this knetwork.
    var totalNodes= cy.$(':visible').nodes().size();
    var totalEdges= cy.$(':visible').edges().size();
-
+   
    // compose knet_metaData with the above fields.
-   var knetwork_metaData= '"name":"'+ knet_name +'", "date_created":"'+ knet_date +'", "num_nodes":'+ totalNodes +', "num_edges":'+ 
-       totalEdges;
-	   
-   // fetch graphSummary from KnetMiner server API, e.g., { "dataSource": {"db_version":"42", "source_organization":"Rothamsted", "taxid":[3702], "db_created":"03/12/2019 11:05", "provider": "Rothamsted"}}.
-   var dummyText= '{"dataSource":{\"db_version\":\"42\",\"source_organization\":\"Rothamsted\",\"taxid\":\"3702,4457\",\"db_created\":\"05/12/2019 11:05\",\"provider\":\"Rothamsted\"}}';
+   var knetwork_metaData= '"name":"'+ knet_name +'", "dateCreated":"'+ knet_date +'", "numNodes":'+ totalNodes +', "numEdges":'+ totalEdges;
+   
+   // fetch graphSummary from KnetMiner server API.
+   var dummyText= '{"dataSource":{\"speciesTaxid\":\"3702,4457\",\"speciesName\":\"Wheat\",\"dbVersion\":45,\"dbDateCreated\":\"05/12/2019 11:05\",\"sourceOrganization\":\"Rothamsted\",\"provider\":\"KnetMiner\"}}';
    var api_graphSummary= JSON.parse(dummyText).dataSource;
    
    // add api_graphSummary to the above as well.
-   knetwork_metaData= knetwork_metaData +', "taxid":"'+ api_graphSummary.taxid +'", "db_version":"'+ api_graphSummary.db_version 
-       +'", "source_organization":"'+ api_graphSummary.source_organization +'", "provider":"'+ api_graphSummary.provider 
-	   +'", "db_created":"'+ api_graphSummary.db_created +'"';
+   knetwork_metaData= knetwork_metaData +', "speciesTaxid":"'+ api_graphSummary.speciesTaxid +'", "speciesName":"'+ 
+       api_graphSummary.speciesName +'", "dbVersion":'+ api_graphSummary.dbVersion +', "dbDateCreated":"'+ api_graphSummary.dbDateCreated 
+	   +'", "sourceOrganization":"'+ api_graphSummary.sourceOrganization +'", "provider":"'+ api_graphSummary.provider +'"';
    knetwork_metaData= '{'+ knetwork_metaData +'}';
 
    /* knetwork response JSON with 6 fields: name, date_created, num_nodes, num_edges, thumbnail & the knetwork graph itself. */
