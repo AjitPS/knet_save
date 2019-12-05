@@ -131,7 +131,7 @@ KNETMAPS.Menu = function() {
                     "scale" : 0.8,
                     "output" : 'base64'}); // .setAttribute('crossOrigin', 'anonymous');
                 
-   return png64.replace("data:image/png;base64,", "z");
+   return png64.replace("data:image/png;base64,", "");
   }
 
   // Show all concepts & relations.
