@@ -59,33 +59,44 @@ KNETMAPS.Menu = function() {
    var omit_redundant= ["graphName","numberOfConcepts","numberOfRelations","version"];
    omit_redundant.forEach(function (entry) { delete metaJSON.ondexmetadata[entry]; });
    
-   // knetwork response: final graphJSON (in exportJson) & allGraphData (in metaJSON) that KnetMaps needs to re-load & render later.
+   // OLD knetwork response: final graphJSON (in exportJson) & allGraphData (in metaJSON) that KnetMaps needs to re-load & render later.
    //var exportedJson= "var graphJSON= "+ JSON.stringify(exportJson) + "; var allGraphData= " + JSON.stringify(metaJSON) +";";
-   
    //var kNet_json_Blob= new Blob([exportedJson], {type: 'application/javascript;charset=utf-8'});
    //saveAs(kNet_json_Blob, knet_name);
    
+   // the graph to export
    var exportedJson= '{"graphJSON":'+ JSON.stringify(exportJson) + ', "allGraphData":' + JSON.stringify(metaJSON) +'}';
 
-   // fetch total node & edge count for the knetwork.
+   // fetch knetwork thumbnail as well.
+   var thumbnail_image= my.exportThumbnail();
+
+   // compose knet_metaData below (with name, date, etc.)
+   var currentDate= new Date();
+   var knet_name= "myKnetwork_"+ currentDate.getTime() +".json"; // knetwork name with timemillisec
+   // formatted date (mm: January=0)
+   var knet_date= String(currentDate.getDate()).padStart(2, '0') + '/' + String(currentDate.getMonth() + 1).padStart(2, '0') + '/' + 
+        currentDate.getFullYear() +' '+ currentDate.getHours() +':'+ ('0'+currentDate.getMinutes()).slice(-2);
+   // fetch total node & edge count for this knetwork.
    var totalNodes= cy.$(':visible').nodes().size();
    var totalEdges= cy.$(':visible').edges().size();
-   // fetch knetwork thumbnail as well.
-   var png64_thumbnail= my.exportThumbnail();
+
+   // compose knet_metaData with the above fields.
+   var knetwork_metaData= '"name":"'+ knet_name +'", "date_created":"'+ knet_date +'", "num_nodes":'+ totalNodes +', "num_edges":'+ 
+       totalEdges;
+	   
+   // fetch graphSummary from KnetMiner server API, e.g., { "dataSource": {"db_version":"42", "source_organization":"Rothamsted", "taxid":[3702], "db_created":"03/12/2019 11:05", "provider": "Rothamsted"}}.
+   var dummyText= '{"dataSource":{\"db_version\":\"42\",\"source_organization\":\"Rothamsted\",\"taxid\":\"3702,4457\",\"db_created\":\"05/12/2019 11:05\",\"provider\":\"Rothamsted\"}}';
+   var api_graphSummary= JSON.parse(dummyText).dataSource;
    
-   // add date & timestamp to export response as well.
-   var currentDate= new Date();
-   var timestamp= currentDate.getTime(); // timestamp for knetwork filename
-   var knet_name= timestamp + "_kNetwork.cyjs.json"; // knetwork name
-   
-   var dd= String(currentDate.getDate()).padStart(2, '0');
-   var mm= String(currentDate.getMonth() + 1).padStart(2, '0'); //January=0
-   var yyyy= currentDate.getFullYear();
-   currentDate= dd + '-' + mm + '-' + yyyy; // date
-   
+   // add api_graphSummary to the above as well.
+   knetwork_metaData= knetwork_metaData +', "taxid":"'+ api_graphSummary.taxid +'", "db_version":"'+ api_graphSummary.db_version 
+       +'", "source_organization":"'+ api_graphSummary.source_organization +'", "provider":"'+ api_graphSummary.provider 
+	   +'", "db_created":"'+ api_graphSummary.db_created +'"';
+   knetwork_metaData= '{'+ knetwork_metaData +'}';
+
    /* knetwork response JSON with 6 fields: name, date_created, num_nodes, num_edges, thumbnail & the knetwork graph itself. */
-   var knetSave_response= '{"name":"'+ knet_name +'", "date_created":"'+ currentDate +'", "num_nodes":'+ totalNodes +', "num_edges":'+ 
-       totalEdges +', "graph":'+ exportedJson +', "thumbnail":"'+ png64_thumbnail +'"}';
+   var knetSave_response= '{"metaData":'+ knetwork_metaData +', "graph":'+ exportedJson +', "image":"'+ thumbnail_image +'"}';
+   //console.log("knetSave_response: "+ knetSave_response);
    
    // use FileSaver.js to save using file downloader (deprecated).
    var kNet_json_Blob= new Blob([knetSave_response], {type: 'application/javascript;charset=utf-8'});
@@ -276,30 +287,33 @@ KNETMAPS.Menu = function() {
    
    var reader= new FileReader();
    reader.onload= function(e) {
-	   //var selectedFileContents= e.target.result; // file
-	   var selectedFileContents= JSON.parse(e.target.result); // parse as JSON.
-	   
-	   var graph_data= selectedFileContents.graph.graphJSON;
-	   var eles_jsons= selectedFileContents.graph.graphJSON.elements;
-	   var eles_styles= selectedFileContents.graph.graphJSON.style;
-	   // re-add graphJSON
-	   graphJSON= eles_jsons; //JSON.parse(eles_jsons);
-	   
-	   var metaJSON= selectedFileContents.graph.allGraphData;
-	   // re-add metadataJSON for ItemInfo
-	   allGraphData= metaJSON; // JSON.parse(metaJSON);
-	   
-	   var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
-	   var currentStylesheet_json= cy.style().json(); // use loaded eles_styles instead
-	   // reload KnetMaps with the new network
-	   //container.load_reload_Network(graphJSON, /*currentStylesheet_json*/ JSON.parse(eles_styles), true);
-	   container.load_reload_Network(graphJSON, eles_styles, true);
-	   eval('stats.updateKnetStats(); legend.populateConceptLegend();');
+	   my.drawWithJson(e.target.result);
 	  };
 	  
    // start reading selectd file's contents
    reader.readAsText(selectedFile);
   }
 
+ // Re-initialise KnetMaps with imported/reloaded (pure) JSON.
+ my.drawWithJson = function(fileContents) {
+	//var selectedFileContents= fileContents; // read file
+	var selectedFileContents= JSON.parse(fileContents); // parse as JSON.
+	
+	var eles_jsons= selectedFileContents.graph.graphJSON.elements;
+	var eles_styles= selectedFileContents.graph.graphJSON.style;
+	var metaJSON= selectedFileContents.graph.allGraphData;
+	
+	//graphJSON= eles_jsons; // re-add graphJSON
+	allGraphData= metaJSON; // re-add metadataJSON to global allGraphData (JS var) for ItemInfo
+	
+	//var cy= $('#cy').cytoscape('get'); // now we have a global reference to `cy`
+	//var currentStylesheet_json= cy.style().json(); // use loaded eles_styles instead
+	
+	// reload KnetMaps with the new network
+	//container.load_reload_Network(graphJSON, /*currentStylesheet_json*/ JSON.parse(eles_styles), true);
+	container.load_reload_Network(eles_jsons, eles_styles, true);
+	eval('stats.updateKnetStats(); legend.populateConceptLegend();');
+  }
+  
   return my;
 };

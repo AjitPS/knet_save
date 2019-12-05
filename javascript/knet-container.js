@@ -9,8 +9,7 @@ KNETMAPS.Container = function() {
 	var my = function() {};
 	
 my.load_reload_Network = function(network_json, network_style, isReloaded) {
-  console.log("load the cytoscapeJS network...");
-  //console.log("isReloaded: "+ isReloaded);
+  console.log("load the cytoscapeJS network... isReloaded: "+ isReloaded);
 
 // Initialise a cytoscape container instance on the HTML DOM using JQuery.
 //var cy = cytoscape({
