@@ -70,6 +70,8 @@ KNETMAPS.Menu = function() {
    // fetch total node & edge count for the knetwork.
    var totalNodes= cy.$(':visible').nodes().size();
    var totalEdges= cy.$(':visible').edges().size();
+   // fetch knetwork thumbnail as well.
+   var png64_thumbnail= my.exportThumbnail();
    
    // add date & timestamp to export response as well.
    var currentDate= new Date();
@@ -81,12 +83,12 @@ KNETMAPS.Menu = function() {
    var yyyy= currentDate.getFullYear();
    currentDate= dd + '-' + mm + '-' + yyyy; // date
    
-   /* knetwork response JSON with 5 fields: name, date_created, num_nodes, num_edges & the graph. */
+   /* knetwork response JSON with 6 fields: name, date_created, num_nodes, num_edges, thumbnail & the knetwork graph itself. */
    var knetSave_response= '{"name":"'+ knet_name +'", "date_created":"'+ currentDate +'", "num_nodes":'+ totalNodes +', "num_edges":'+ 
-       totalEdges +', "graph":'+ /*JSON.stringify(*/exportedJson/*)*/ +'}';
+       totalEdges +', "graph":'+ exportedJson +', "thumbnail":"'+ png64_thumbnail +'"}';
    
    // use FileSaver.js to save using file downloader (deprecated).
-   var kNet_json_Blob= new Blob([/*exportedJson*/knetSave_response], {type: 'application/javascript;charset=utf-8'});
+   var kNet_json_Blob= new Blob([knetSave_response], {type: 'application/javascript;charset=utf-8'});
    saveAs(kNet_json_Blob, knet_name);
    
    // return response
@@ -110,6 +112,15 @@ KNETMAPS.Menu = function() {
    pngTab.document.write(knet_iframe);
    pngTab.document.title="kNetwork_png";
    pngTab.document.close();
+  }
+  
+  // Export the network thumbnail.
+  my.exportThumbnail = function() {
+   var png64 = cy.png({
+                    "scale" : 0.8,
+                    "output" : 'base64'}); // .setAttribute('crossOrigin', 'anonymous');
+                
+   return png64.replace("data:image/png;base64,", "z");
   }
 
   // Show all concepts & relations.
