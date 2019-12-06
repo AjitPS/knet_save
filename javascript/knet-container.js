@@ -1,7 +1,6 @@
 var KNETMAPS = KNETMAPS || {};
 
 KNETMAPS.Container = function() {
-	
 
 	var stats = KNETMAPS.Stats();
 	var iteminfo = KNETMAPS.ItemInfo();
@@ -21,8 +20,8 @@ my.load_reload_Network = function(network_json, network_style, isReloaded) {
   // Using the JSON data to create the nodes.
   elements: network_json,
   
- // layout: { name: 'preset' }, // layout of the Network
-  // Note: running preset layout before rendering breaks the Legend! FIX: pending
+  // layout of the Network: isReloaded (set preset layout), else (for JS vars, do nothing).
+  layout: isReloaded ? { name: 'preset' } : '',
 
   // this is an alternative that uses a bitmap during interaction.
   textureOnViewport: false, // true,
@@ -60,10 +59,6 @@ my.load_reload_Network = function(network_json, network_style, isReloaded) {
 		 /* when rendering new knetwork or maximize/minimize, then run selected (default) layout. For reloaded knetworks, skip this. */
 		 KNETMAPS.Menu().rerunLayout(); // reset current layout.
 	    }
-	  else { // For reloaded knetworks, use preset layout.
-		console.log("preset layout...");
-		//window.cy.layout({ name: 'preset' }); // layout of the Network
-	  }
 	  window.cy= this;
   }
 });
