@@ -192,9 +192,7 @@ KNETMAPS.LayoutDefaults = function() {
    };
    
    // Preset layout.
-   my.presetLayout= {
-	name: 'preset'
-   };
+   my.presetLayout= { name: 'preset' };
    
    my.presetLayout_advanced= {
 	name: 'preset',

@@ -5,21 +5,23 @@ KNETMAPS.Container = function() {
 
 	var stats = KNETMAPS.Stats();
 	var iteminfo = KNETMAPS.ItemInfo();
+	var conceptLegend = KNETMAPS.ConceptsLegend();
+	var layouts = KNETMAPS.Layouts();
 
 	var my = function() {};
 	
 my.load_reload_Network = function(network_json, network_style, isReloaded) {
-  console.log("load the cytoscapeJS network... isReloaded: "+ isReloaded);
+  console.log("load the cytoscapeJS network... isPureJSON: "+ isReloaded);
 
-// Initialise a cytoscape container instance on the HTML DOM using JQuery.
-//var cy = cytoscape({
-var cy = window.cy = cytoscape({
+ // Initialise a cytoscape container instance on the HTML DOM using JQuery.
+ //var cy = cytoscape({
+ var cy = window.cy = cytoscape({
   container: document.getElementById('cy')/*$('#cy')*/,
   style: network_style,
   // Using the JSON data to create the nodes.
   elements: network_json,
   
-  layout: { name: 'preset' }, // layout of the Network
+ // layout: { name: 'preset' }, // layout of the Network
   // Note: running preset layout before rendering breaks the Legend! FIX: pending
 
   // this is an alternative that uses a bitmap during interaction.
@@ -55,9 +57,13 @@ var cy = window.cy = cytoscape({
 
   ready: function() {
 	  if(isReloaded === false) {
-		 /* when rendering new knetwork or maximize/minimze, then run selected (default) layout. For reloaded knetwork files, skip this. */
+		 /* when rendering new knetwork or maximize/minimize, then run selected (default) layout. For reloaded knetworks, skip this. */
 		 KNETMAPS.Menu().rerunLayout(); // reset current layout.
 	    }
+	  else { // For reloaded knetworks, use preset layout.
+		console.log("preset layout...");
+		//window.cy.layout({ name: 'preset' }); // layout of the Network
+	  }
 	  window.cy= this;
   }
 });
@@ -230,6 +236,7 @@ cy.elements().qtip({
              this.addClass('HideEle');
              // Refresh network legend.
              stats.updateKnetStats();
+			 conceptLegend.populateConceptLegend();
             }
         },
 
@@ -264,6 +271,7 @@ cy.elements().qtip({
                }
             // Refresh network Stats.
             stats.updateKnetStats();
+			conceptLegend.populateConceptLegend();
            }
         },
 

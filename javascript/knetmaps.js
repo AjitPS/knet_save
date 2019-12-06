@@ -81,11 +81,11 @@ KNETMAPS.KnetMaps = function() {
 		maskloader.removeNetworkLoader(target);
 	};
 
-	my.draw = function(target) {
+	my.draw = function(target, eles_jsons, metadata_json, eles_styles) {
 		drawDiv(target);
 		showDiv(target);
 		maskloader.showNetworkLoader(target);
-		generator.generateNetworkGraph();
+		generator.generateNetworkGraph(eles_jsons, metadata_json, eles_styles);
 		maskloader.removeNetworkLoader(target);
 	};
 

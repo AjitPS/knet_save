@@ -58,6 +58,7 @@ KNETMAPS.Layouts = function() {
     var y = n.position("y");
 	console.log("x,y: "+ x +","+ y); }); */
 	
+	console.log("use preset layout...");
     eles.layout(defaults.presetLayout); // run the preset layout for reloaded knetworks.
   }
 
