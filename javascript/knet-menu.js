@@ -59,27 +59,20 @@ KNETMAPS.Menu = function() {
    var omit_redundant= ["graphName","numberOfConcepts","numberOfRelations","version"];
    omit_redundant.forEach(function (entry) { delete metaJSON.ondexmetadata[entry]; });
    
-   // OLD knetwork response: final graphJSON (in exportJson) & allGraphData (in metaJSON) that KnetMaps needs to re-load & render later.
-   //var exportedJson= "var graphJSON= "+ JSON.stringify(exportJson) + "; var allGraphData= " + JSON.stringify(metaJSON) +";";
-   //var kNet_json_Blob= new Blob([exportedJson], {type: 'application/javascript;charset=utf-8'});
-   //saveAs(kNet_json_Blob, knet_name);
-   
    // the graph to export
    var exportedJson= '{"graphJSON":'+ JSON.stringify(exportJson) + ', "allGraphData":' + JSON.stringify(metaJSON) +'}';
 
    // fetch knetwork thumbnail as well.
    var thumbnail_image= my.exportThumbnail();
 
-   // compose knet_metaData below (with name, date, etc.)
-   var currentDate= new Date();
-   //var knet_name= "myKnetwork_"+ currentDate.getTime() +".json"; // knetwork name with timemillisec
+   // compose knetwork metaData below (with name, date, etc.)
    var knet_name= "myKnetwork.json";
-   // formatted date (mm: January=0)
-   var knet_date= String(currentDate.getDate()).padStart(2, '0') + '/' + String(currentDate.getMonth() + 1).padStart(2, '0') + '/' + 
-        currentDate.getFullYear() +' '+ currentDate.getHours() +':'+ ('0'+currentDate.getMinutes()).slice(-2);
    // fetch total node & edge count for this knetwork.
    var totalNodes= cy.$(':visible').nodes().size();
    var totalEdges= cy.$(':visible').edges().size();
+   var currentDate= new Date();
+   var knet_date= String(currentDate.getDate()).padStart(2, '0') + '/' + String(currentDate.getMonth() + 1).padStart(2, '0') + '/' + 
+        currentDate.getFullYear() +' '+ currentDate.getHours() +':'+ ('0'+currentDate.getMinutes()).slice(-2); // formatted date (mm: January=0)
    
    // compose knet_metaData with the above fields.
    var knetwork_metaData= '"name":"'+ knet_name +'", "dateCreated":"'+ knet_date +'", "numNodes":'+ totalNodes +', "numEdges":'+ totalEdges;
@@ -87,6 +80,7 @@ KNETMAPS.Menu = function() {
    // fetch graphSummary from KnetMiner server API.
    var dummyText= '{"dataSource":{\"speciesTaxid\":\"3702,4457\",\"speciesName\":\"Wheat\",\"dbVersion\":45,\"dbDateCreated\":\"05/12/2019 11:05\",\"sourceOrganization\":\"Rothamsted\",\"provider\":\"KnetMiner\"}}';
    var api_graphSummary= JSON.parse(dummyText).dataSource;
+   // TODO: replace with KnetMiner API call to get backend metadata.
    
    // add api_graphSummary to the above as well.
    knetwork_metaData= knetwork_metaData +', "speciesTaxid":"'+ api_graphSummary.speciesTaxid +'", "speciesName":"'+ 
@@ -94,15 +88,17 @@ KNETMAPS.Menu = function() {
 	   +'", "sourceOrganization":"'+ api_graphSummary.sourceOrganization +'", "provider":"'+ api_graphSummary.provider +'"';
    knetwork_metaData= '{'+ knetwork_metaData +'}';
 
-   /* knetwork response JSON with 6 fields: name, date_created, num_nodes, num_edges, thumbnail & the knetwork graph itself. */
+   /* final knetwork response JSON with metadata, thumbnail & the knetwork itself. */
    var knetSave_response= '{"metaData":'+ knetwork_metaData +', "graph":'+ exportedJson +', "image":"'+ thumbnail_image +'"}';
-   //console.log("knetSave_response: "+ knetSave_response);
    
-   // use FileSaver.js to save using file downloader (deprecated).
-   var kNet_json_Blob= new Blob([knetSave_response], {type: 'application/javascript;charset=utf-8'});
-   saveAs(kNet_json_Blob, knet_name);
+   // use FileSaver.js to save using file downloader (disable in production/demo).
+   //var kNet_json_Blob= new Blob([knetSave_response], {type: 'application/javascript;charset=utf-8'});
+   //saveAs(kNet_json_Blob, knet_name);
    
-   // return response
+   console.log("knetSave_response: "+ knetSave_response); // test
+   
+   // transfer response to knetspace
+   // TODO
   }
   
   // Export the graph as a .png image and allow users to save it.
